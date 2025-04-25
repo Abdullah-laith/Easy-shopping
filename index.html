@@ -3,63 +3,144 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Payment Page</title>
+  <title>Smart Cart Checkout</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
-    .container { max-width: 400px; margin: auto; padding: 20px; background: #f4f4f4; border-radius: 10px; }
-    .price { font-size: 24px; font-weight: bold; color: #28a745; }
-    .cart-number { font-size: 18px; color: #555; margin-top: 10px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { padding: 8px; border: 1px solid #ccc; }
-    th { background: #e9e9e9; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #74ABE2 0%, #5563DE 100%);
+      color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      background: #fff;
+      max-width: 450px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      padding: 30px;
+      text-align: center;
+    }
+    .card h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #222;
+    }
+    .price-label {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #777;
+      margin-bottom: 6px;
+    }
+    .price {
+      font-size: 36px;
+      font-weight: 600;
+      color: #28a745;
+      margin-bottom: 16px;
+    }
+    .cart-number {
+      font-size: 16px;
+      color: #555;
+      margin-bottom: 24px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+    th {
+      background: #f7f7f7;
+      text-align: left;
+      font-weight: 600;
+    }
+    tbody tr:nth-child(even) {
+      background: #fafafa;
+    }
+    .btn-pay {
+      display: inline-block;
+      background: #5563DE;
+      color: #fff;
+      text-decoration: none;
+      padding: 12px 30px;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: background 0.3s ease;
+    }
+    .btn-pay:hover {
+      background: #4353B8;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="card">
     <h1>Checkout</h1>
-    <p>Total Price:</p>
-    <p class="price" id="price">Loading...</p>
-    <p class="cart-number" id="cartNumber">Loading cart number...</p>
 
-    <!-- NEW: placeholder for the shopping list -->
+    <div class="price-section">
+      <div class="price-label">Total Price</div>
+      <div class="price" id="price">Loading...</div>
+      <div class="cart-number" id="cartNumber">Loading cart number...</div>
+    </div>
+
     <div id="itemsList"></div>
+
+    <a href="#" class="btn-pay" id="payBtn">Proceed to Pay</a>
   </div>
 
   <script>
+    // Get URL params
     const params = new URLSearchParams(window.location.search);
     const amount = params.get('amount');
-    document.getElementById('price')
-      .innerText = amount ? `$${amount}` : "Error: No price found";
-
-    // random cart number 1–20
-    const cartNum = Math.floor(Math.random()*20)+1;
-    document.getElementById('cartNumber')
-      .innerText = "Number of cart " + cartNum;
-
-    // ---- render the items list if present ----
     const itemsParam = params.get('items');
-    if(itemsParam) {
-      const rows = itemsParam.split('|').map(itemStr => {
-        const [name, qty, price] = itemStr.split(',');
+
+    // Display price
+    document.getElementById('price').innerText = amount ? `$${amount}` : "—";
+
+    // Random cart number 1–20
+    const cartNum = Math.floor(Math.random() * 20) + 1;
+    document.getElementById('cartNumber').innerText = `Cart #${cartNum}`;
+
+    // Render items if present
+    if (itemsParam) {
+      const rows = itemsParam.split('|').map(str => {
+        const [name, qty, price] = str.split(',');
         return { name, qty, price };
       });
-
       const container = document.getElementById('itemsList');
-      const table = document.createElement('table');
-      table.innerHTML = `
-        <thead>
-          <tr><th>Product</th><th>Qty</th><th>Price</th></tr>
-        </thead>
-      `;
-      const body = document.createElement('tbody');
+      let html = `<table>
+        <thead><tr><th>Product</th><th>Qty</th><th>Price</th></tr></thead><tbody>`;
       rows.forEach(r => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${r.name}</td><td>${r.qty}</td><td>$${r.price}</td>`;
-        body.appendChild(tr);
+        html += `<tr>
+          <td>${r.name}</td>
+          <td>${r.qty}</td>
+          <td>$${r.price}</td>
+        </tr>`;
       });
-      table.appendChild(body);
-      container.appendChild(table);
+      html += `</tbody></table>`;
+      container.innerHTML = html;
     }
+
+    // Update pay button link to include same params
+    const payBtn = document.getElementById('payBtn');
+    let href = window.location.href;
+    payBtn.href = href;
   </script>
 </body>
 </html>
