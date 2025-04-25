@@ -21,7 +21,6 @@
     <p class="price" id="price">Loading...</p>
     <p class="cart-number" id="cartNumber">Loading cart number...</p>
 
-    <!-- NEW: placeholder for the shopping list -->
     <div id="itemsList"></div>
   </div>
 
@@ -36,25 +35,25 @@
     document.getElementById('cartNumber')
       .innerText = "Number of cart " + cartNum;
 
-    // ---- render the items list if present ----
+    // render only name & price
     const itemsParam = params.get('items');
-    if(itemsParam) {
+    if (itemsParam) {
       const rows = itemsParam.split('|').map(itemStr => {
         const [name, qty, price] = itemStr.split(',');
-        return { name, qty, price };
+        return { name, price };
       });
 
       const container = document.getElementById('itemsList');
       const table = document.createElement('table');
       table.innerHTML = `
         <thead>
-          <tr><th>Product</th><th>Qty</th><th>Price</th></tr>
+          <tr><th>Product</th><th>Price</th></tr>
         </thead>
       `;
       const body = document.createElement('tbody');
       rows.forEach(r => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${r.name}</td><td>${r.qty}</td><td>$${r.price}</td>`;
+        tr.innerHTML = `<td>${r.name}</td><td>$${r.price}</td>`;
         body.appendChild(tr);
       });
       table.appendChild(body);
