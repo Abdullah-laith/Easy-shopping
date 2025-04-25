@@ -1,144 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Payment Page</title>
   <style>
-    /* Reset */
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      background: #f0f2f5;
-      color: #333;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    .container {
-      background: #fff;
-      width: 100%;
-      max-width: 420px;
-      border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-      padding: 30px;
-    }
-
-    h1 {
-      font-size: 24px;
-      margin-bottom: 20px;
-      text-align: center;
-      color: #222;
-    }
-
-    .price-label {
-      font-size: 14px;
-      color: #666;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 6px;
-      text-align: center;
-    }
-
-    .price {
-      font-size: 32px;
-      font-weight: bold;
-      color: #28a745;
-      text-align: center;
-      margin-bottom: 12px;
-    }
-
-    .cart-number {
-      font-size: 16px;
-      color: #555;
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-    }
-
-    th, td {
-      padding: 10px 12px;
-      border-bottom: 1px solid #e1e1e1;
-      text-align: left;
-      font-size: 14px;
-    }
-
-    th {
-      background: #f7f7f7;
-      font-weight: 600;
-    }
-
-    tbody tr:hover {
-      background: #f9f9f9;
-    }
-
-    .no-items {
-      text-align: center;
-      color: #888;
-      font-style: italic;
-      margin-top: 16px;
-    }
+    body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+    .container { max-width: 400px; margin: auto; padding: 20px; background: #f4f4f4; border-radius: 10px; }
+    .price { font-size: 24px; font-weight: bold; color: #28a745; }
+    .cart-number { font-size: 18px; color: #555; margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 8px; border: 1px solid #ccc; }
+    th { background: #e9e9e9; }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Checkout</h1>
+    <p>Total Price:</p>
+    <p class="price" id="price">Loading...</p>
+    <p class="cart-number" id="cartNumber">Loading cart number...</p>
 
-    <div class="price-section">
-      <div class="price-label">Total Price</div>
-      <div class="price" id="price">Loading...</div>
-      <div class="cart-number" id="cartNumber">Loading cart number...</div>
-    </div>
-
-    <div id="itemsList">
-      <!-- If no items, show placeholder -->
-      <div class="no-items">No items in cart</div>
-    </div>
+    <!-- NEW: placeholder for the shopping list -->
+    <div id="itemsList"></div>
   </div>
 
   <script>
     const params = new URLSearchParams(window.location.search);
     const amount = params.get('amount');
-    document.getElementById('price').innerText =
-      amount ? `$${amount}` : "Error: No price found";
+    document.getElementById('price')
+      .innerText = amount ? `$${amount}` : "Error: No price found";
 
-    const cartNum = Math.floor(Math.random() * 20) + 1;
-    document.getElementById('cartNumber').innerText =
-      "Number of cart " + cartNum;
+    // random cart number 1–20
+    const cartNum = Math.floor(Math.random()*20)+1;
+    document.getElementById('cartNumber')
+      .innerText = "Number of cart " + cartNum;
 
+    // ---- render the items list if present ----
     const itemsParam = params.get('items');
-    if (itemsParam) {
+    if(itemsParam) {
       const rows = itemsParam.split('|').map(itemStr => {
         const [name, qty, price] = itemStr.split(',');
         return { name, qty, price };
       });
 
       const container = document.getElementById('itemsList');
-      container.innerHTML = ''; // clear placeholder
-
       const table = document.createElement('table');
       table.innerHTML = `
         <thead>
           <tr><th>Product</th><th>Qty</th><th>Price</th></tr>
         </thead>
       `;
-
       const body = document.createElement('tbody');
       rows.forEach(r => {
         const tr = document.createElement('tr');
         tr.innerHTML = `<td>${r.name}</td><td>${r.qty}</td><td>$${r.price}</td>`;
         body.appendChild(tr);
       });
-
       table.appendChild(body);
       container.appendChild(table);
     }
